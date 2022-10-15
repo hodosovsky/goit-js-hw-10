@@ -25,7 +25,16 @@ function onInput(event) {
         makePreview(country);
       } else if (country.length === 1) {
         renderCountryCard(country);
+        console.log(country[0].capital[0]);
+        if (country[0].capital[0] === 'Kyiv') {
+          Notify.info('Слава');
+          Notify.warning('Україні');
+        }
+        if (country[0].capital[0] === 'Moscow') {
+          Notify.failure('путін ХУЙЛО');
+        }
       }
+
       if (country.status >= 400) {
         return response.json();
       }
@@ -41,13 +50,17 @@ function onInput(event) {
 function renderCountryCard(country) {
   const countryCard = country => {
     const { name, capital, population, flags, languages } = country;
-    console.log(country);
+
     return `<h1 class="country-name">Країна: ${name.official}</h1>
         <p class="capital">Столиця: ${capital}</p>
         <p class="population">Населення: ${population} чол.</p>
         <img src="${flags.svg}" alt="${name.official}" width = "300"  />
         <p class="languages">Мова: ${languages}</p>`;
   };
+  if (name === 'Ukraine') {
+    Notify.info('Слава');
+    Notify.info('Україні');
+  }
   const markup = country.map(countryCard).join(' ');
   countryList.innerHTML = '';
   container.innerHTML = markup;
@@ -56,7 +69,7 @@ function renderCountryCard(country) {
 function makePreview(country) {
   const countryCard = country => {
     const { name, flags } = country;
-    console.log(country);
+
     return `<li class="country-Preview"><span><img src="${flags.svg}" alt="${name.official}" width = "30"  /></span> <span>${name.official}<span></li>`;
   };
   const markup = country.map(countryCard).join(' ');
