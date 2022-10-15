@@ -25,7 +25,7 @@ function onInput(event) {
         makePreview(country);
       } else if (country.length === 1) {
         renderCountryCard(country);
-        console.log(country[0].capital[0]);
+
         if (country[0].capital[0] === 'Kyiv') {
           Notify.info('Слава');
           Notify.warning('Україні');
