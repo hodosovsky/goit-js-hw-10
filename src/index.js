@@ -1,5 +1,10 @@
 import './css/styles.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+Notify.init({
+  timeout: 3000,
+  width: '300px',
+  position: 'center-top',
+});
 
 import fetchCountry from './fetch-country';
 
@@ -31,7 +36,7 @@ function onInput(event) {
           Notify.warning('Україні');
         }
         if (country[0].capital[0] === 'Moscow') {
-          Notify.failure('путін ХУЙЛО');
+          Notify.failure('<sup>п</sup>утін ХУЙЛО');
         }
       }
 
