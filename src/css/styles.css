@@ -47,4 +47,5 @@ body::before {
 }
 .country-list a {
   text-decoration: none;
+  color: blue;
 }

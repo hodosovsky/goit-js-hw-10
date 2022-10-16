@@ -94,7 +94,9 @@ function makePreview(country) {
   const countryCard = country => {
     const { name, capital, population, flags, languages } = country;
 
-    return `<a href="https://en.wikipedia.org/wiki/${name.common}" target="_blank" rel="noopener noreferrer nofollow"><li class="country-Preview"><span><img src="${flags.svg}" alt="${name.common}" width = "30"  /></span>  <span>${name.official}<span></li></a>`;
+    return `<a href="https://en.wikipedia.org/wiki/${name.common}" target="_blank" rel="noopener noreferrer nofollow">
+    <li class="country-Preview"><span><img src="${flags.svg}" alt="${name.common}" width = "30" /></span>  <span>${name.official}<span>
+    </li></a>`;
   };
   const markup = country.map(countryCard).join(' ');
   container.innerHTML = '';
