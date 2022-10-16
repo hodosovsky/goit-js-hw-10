@@ -45,3 +45,6 @@ body::before {
   font-size: 24px;
   margin: 0;
 }
+.country-list a {
+  text-decoration: none;
+}
