@@ -3,7 +3,6 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 Notify.init({
   timeout: 3000,
   width: '300px',
-  position: 'center-top',
 });
 
 import fetchCountry from './fetch-country';
@@ -14,60 +13,80 @@ const DEBOUNCE_DELAY = 300;
 const container = document.querySelector('.country-info');
 const nameInput = document.querySelector('#search-box');
 const countryList = document.querySelector('.country-list');
+nameInput.placeholder = 'Country Name...';
 nameInput.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(event) {
-  fetchCountry(event.target.value)
-    .then(country => {
-      if (country.length >= 10) {
-        Notify.info(
-          'Too many matches found. Please enter a more specific name.'
+  let countryName = event.target.value.trim();
+
+  if (countryName === '') {
+    nameInput.style.borderColor = '';
+    nameInput.style.outlineColor = '';
+    countryList.innerHTML = '';
+    container.innerHTML = '';
+  } else {
+    fetchCountry(countryName)
+      .then(country => {
+        if (country.length >= 10) {
+          Notify.info(
+            'Too many matches found. Please enter a more specific name.'
+          );
+          nameInput.style.borderColor = '#FF0000';
+          nameInput.style.outlineColor = '#FF0000';
+          countryList.innerHTML = '';
+          container.innerHTML = '';
+        } else if (country.length >= 2 && country.length < 10) {
+          countryList.innerHTML = '';
+          makePreview(country);
+          nameInput.style.borderColor = '#00FF00';
+          nameInput.style.outlineColor = '#00FF00';
+        } else if (country.length === 1) {
+          renderCountryCard(country);
+          nameInput.style.borderColor = '#00FF00';
+          nameInput.style.outlineColor = '#00FF00';
+          if (country[0].capital[0] === 'Kyiv') {
+            Notify.info('Слава');
+            Notify.warning('Україні');
+          }
+          if (country[0].capital[0] === 'Moscow') {
+            Notify.failure('<sup>п</sup>утін ХУЙЛО');
+          }
+        }
+
+        if (country.status >= 400) {
+          return response.json();
+        }
+      })
+      .catch(error => {
+        Notify.failure(
+          `Oops, there is no country with that name ${event.target.value}`
         );
+        nameInput.style.borderColor = '#FF0000';
+        nameInput.style.outlineColor = '#FF0000';
+        console.log(error);
         countryList.innerHTML = '';
-        container.innerHTML = '';
-      } else if (country.length >= 2 && country.length < 10) {
-        countryList.innerHTML = '';
-        makePreview(country);
-      } else if (country.length === 1) {
-        renderCountryCard(country);
-
-        if (country[0].capital[0] === 'Kyiv') {
-          Notify.info('Слава');
-          Notify.warning('Україні');
-        }
-        if (country[0].capital[0] === 'Moscow') {
-          Notify.failure('<sup>п</sup>утін ХУЙЛО');
-        }
-      }
-
-      if (country.status >= 400) {
-        return response.json();
-      }
-    })
-    .catch(error => {
-      Notify.failure(
-        `Oops, there is no country with that name ${event.target.value}`
-      );
-      countryList.innerHTML = '';
-    });
+      });
+  }
 }
 
-function renderCountryCard(country) {
+export function renderCountryCard(country) {
   const countryCard = country => {
     const { name, capital, population, flags, languages } = country;
 
-    return `<h1 class="country-name">Країна: ${name.official}</h1>
-        <p class="capital">Столиця: ${capital}</p>
-        <p class="population">Населення: ${population} чол.</p>
-        <img src="${flags.svg}" alt="${name.official}" width = "300"  />
-        <p class="languages">Мова: ${languages}</p>`;
+    return `<h1 class="country-name"><span><img src="${flags.svg}" alt="${
+      name.common
+    }" width = "30"  /></span> ${name.official}</h1>
+            <p class="capital"><span>Capital:</span> ${capital}</p>
+            <p class="population"><span>Population:</span> ${population}</p>
+            <p class="languages"><span>Language:</span> ${Object.values(
+              languages
+            ).join(', ')}</p>
+            <img src="${flags.svg}" alt="${name.common}" width = "300"  />`;
   };
-  if (name === 'Ukraine') {
-    Notify.info('Слава');
-    Notify.info('Україні');
-  }
+
   const markup = country.map(countryCard).join(' ');
   countryList.innerHTML = '';
+
   container.innerHTML = markup;
 }
 
@@ -75,7 +94,7 @@ function makePreview(country) {
   const countryCard = country => {
     const { name, flags } = country;
 
-    return `<li class="country-Preview"><span><img src="${flags.svg}" alt="${name.official}" width = "30"  /></span> <span>${name.official}<span></li>`;
+    return `<li class="country-Preview"><span><img src="${flags.svg}" alt="${name.common}" width = "30"  /></span>  <span>${name.common}<span></li>`;
   };
   const markup = country.map(countryCard).join(' ');
   container.innerHTML = '';
